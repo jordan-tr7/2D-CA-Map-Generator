@@ -2,45 +2,149 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-
-def plot_grid(grid):
-    num_rows = grid.shape[0]
-    num_cols = grid.shape[1]
-
-    plot = plt.figure()
-
-    #plot.add_axes()
-
-    plt.title = "Map Test"
-    plot = plt.imshow(
-        grid, cmap = 'Greys', interpolation = 'nearest', origin = 'lower'
-    )
-
-    #plt.colorbar(plot)
+def create_noise_grid(num_rows, num_cols, desired_density):
+    # quick check to make density between 0 - 100
+    if desired_density > 100:
+        desired_density = 100
     
-    
+    if desired_density < 0:
+        desired_density = 0
 
-    plt.savefig('figs/test.png')
-
-    plt.show()
-
-def main():
+    # convert specified density into probabilities 
+    prob_one = desired_density / 100
+    prob_zero = 1 - prob_one
 
     """
-    Note: in case we want to change density of the 2D grid, 
-    googled the prompt "numpy randint with set probability": 
+    Note: Originaly used numpy's randomint, but in case we want 
+    to change density of the 2D grid, googled the prompt 
+        "numpy randint with set probability": 
 
     Which returned the following code from Google's AI Overview:
 
     # Generate an array of 10 random integers from the same set and probabilities
     random_ints = np.random.choice([0, 1, 2], size=10, p=[0.2, 0.5, 0.3])
     """
-    grid = np.random.randint(0, 2, (100,100))
-    print(grid)
-    print(grid.shape)
+    # create and return matrix using numpy's random choice
+    # w/ set probabilities for 0's and 1's
+    grid = np.random.choice(
+        [0, 1], 
+        size=(num_rows, num_cols), 
+        p = [prob_zero, prob_one]
+    )
+    return grid
 
-    plot_grid(grid)
 
+def plot_grid(grid, filename):
+    # create a plot to hold the figure
+    plot = plt.figure()
+
+    # add a title, then use imshow to add the plot
+    plt.title = "Map Test"
+    plot = plt.imshow(
+        grid, cmap = 'Greys', interpolation = 'nearest', origin = 'lower'
+    )
+
+    # this may be uncommented for color scale, but not relevant for binary
+    #plt.colorbar(plot)
+    
+    # save image then display plot
+    plt.savefig(f'figs/{filename}.png')
+    plt.show()
+
+
+def in_bounds(row, col, shape):
+    """
+    This function determines whether or not the given row
+    and column index positions of a table are in bounds. 
+
+    Parameters
+    ----------
+    row : int
+        The row index of the position being checked
+    col : int
+        The col index of the position being checked
+    shape : tuple (num_rows, num_cols)
+        The shape of the current matrix.
+    
+    Returns
+    -------
+    boolean
+        True if table[row, col] is in bounds, else False.
+    
+    Examples
+    --------
+    grid = create_noise_grid(100, 100, 45) # shape is (100, 100)
+    print(in_bounds(99, 99, grid.shape)) # True
+    print(in_bounds(-1, 5, grid.shape))  # False
+    """
+    row_max = shape[0] - 1
+    col_max = shape[1] - 1 
+
+    if (row > row_max) or (row < 0) or (col > col_max) or (col < 0):
+        return False 
+    else:
+        return True
+
+
+
+def create_map_with_ca(starting_grid, num_iterations):
+
+    # get num rows and cols
+    table_shape = starting_grid.shape
+    num_rows = table_shape[0]
+    num_cols = table_shape[1]
+
+    # create a new var to store the changed grid
+    modified_grid = starting_grid.copy()
+
+    # loop through specified number of iterations
+    for i in range(1, num_iterations + 1):
+        
+        # create a temporary grid for this iteration
+        temp_grid = modified_grid.copy()
+
+        print(f"Starting iteration {i}...")
+
+        # double loop for rows, then cols, equivalent to map height, width
+        for row in range(num_rows):
+            for col in range(num_cols):
+                
+                # now for each cell, we need to find number of neighbors
+                num_neighboring_walls = 0
+
+                for m in range(row - 1, row + 2):
+                    for n in range(col - 1, col + 2):
+
+                        # check if grid[m, n] is in bounds
+                        if in_bounds(m, n, table_shape):
+                            # we don't count the cell itself as a neighbor
+                            if (m != row) or (n != col):
+                                # if spot == 1, increment num walls
+                                if temp_grid[m, n] == 1:
+                                    num_neighboring_walls += 1
+                        else:
+                            # if out of bounds, automatically consider a wall
+                            num_neighboring_walls += 1
+                
+                # once outside of loop to check neighbors, apply CA rule
+                if num_neighboring_walls > 4:
+                    modified_grid[row, col] = 1
+                else:
+                    modified_grid[row, col] = 0
+    
+    return modified_grid
+
+
+def main():
+
+    # Note: 1's, black cells, are walls
+    #       0's, white cells, are floors
+    grid = create_noise_grid(1000, 1000, 65)
+
+    plot_grid(grid, "Density-65_iteration-0")
+
+    new_map = create_map_with_ca(grid, 15)
+    plot_grid(new_map, "Density-65_iteration-15")
 
 
 if __name__ == "__main__":
