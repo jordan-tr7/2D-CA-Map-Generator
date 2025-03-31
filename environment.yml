@@ -1,0 +1,9 @@
+name: ca-map
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - pandas
+  - seaborn
+  - matplotlib
+  - make
