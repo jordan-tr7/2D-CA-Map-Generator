@@ -18,4 +18,4 @@ You will need Python, and some kind of environment manager: I use [Miniconda](ht
   - Has the same optional arguments as `make simple_map`, and has two additional optional arguments.
   - `PROB_ITEM`: a float between 0 - 1, the likelihood of spawning an item in an appropriate cell. 
   - `PROB_ENEMY`: a float between 0 - 1, the likelihood of spawning an enemy in an appropriate cell. 
-  - **make clean** - may be used to remove saved images from the `figs` directory.
+- **make clean** - may be used to remove saved images from the `figs` directory.
