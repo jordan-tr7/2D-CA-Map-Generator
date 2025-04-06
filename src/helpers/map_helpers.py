@@ -1,8 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-
-def create_noise_grid(num_rows, num_cols, desired_density):
+def create_noise_grid(num_rows, num_cols, desired_density, rng_seed):
     # quick check to make density between 0 - 100
     if desired_density > 100:
         desired_density = 100
@@ -14,6 +13,9 @@ def create_noise_grid(num_rows, num_cols, desired_density):
     prob_one = desired_density / 100
     prob_zero = 1 - prob_one
 
+
+    np.random.seed(rng_seed)
+
     """
     Note: Originaly used numpy's randomint, but in case we want 
     to change density of the 2D grid, googled the prompt 
@@ -23,6 +25,8 @@ def create_noise_grid(num_rows, num_cols, desired_density):
 
     # Generate an array of 10 random integers from the same set and probabilities
     random_ints = np.random.choice([0, 1, 2], size=10, p=[0.2, 0.5, 0.3])
+
+    # Will adapt this to our needs below to set probability of 0/1
     """
     # create and return matrix using numpy's random choice
     # w/ set probabilities for 0's and 1's
@@ -87,6 +91,9 @@ def in_bounds(row, col, shape):
 
 
 
+
+
+
 def create_map_with_ca(starting_grid, num_iterations):
 
     # get num rows and cols
@@ -133,19 +140,3 @@ def create_map_with_ca(starting_grid, num_iterations):
                     modified_grid[row, col] = 0
     
     return modified_grid
-
-
-def main():
-
-    # Note: 1's, black cells, are walls
-    #       0's, white cells, are floors
-    grid = create_noise_grid(1000, 1000, 65)
-
-    plot_grid(grid, "Density-65_iteration-0")
-
-    new_map = create_map_with_ca(grid, 15)
-    plot_grid(new_map, "Density-65_iteration-15")
-
-
-if __name__ == "__main__":
-    main()
