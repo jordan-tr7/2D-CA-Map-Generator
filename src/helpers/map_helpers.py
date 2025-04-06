@@ -1,6 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
+def create_blank_grid(num_rows, num_cols):
+    return np.zeros(shape=(num_rows, num_cols), dtype = int)
+
 def create_noise_grid(num_rows, num_cols, desired_density, rng_seed):
     # quick check to make density between 0 - 100
     if desired_density > 100:
