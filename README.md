@@ -15,7 +15,7 @@ You will need Python, and some kind of environment manager: I use [Miniconda](ht
   - `SEED`: the seed for random number generation while creating the map.
   - **Example:** to run this command with custom arguments, we could type: `make simple_map HEIGHT=50 WIDTH=50 DENSITY=59 ITERATIONS=10 SEED=42` in the command line.
 - **make enhanced_map** - to generate a map using the same procedure as `make simple_map`, but then to apply another Cellular Automata based procedure to add cells representing items and enemies to the generated map. 
- - Has the same optional arguments as `make simple_map`, and has two additional optional arguments.
- - `PROB_ITEM`: a float between 0 - 1, the likelihood of spawning an item in an appropriate cell. 
- - `PROB_ENEMY`: a float between 0 - 1, the likelihood of spawning an enemy in an appropriate cell. 
-- **make clean** - may be used to remove saved images from the `figs` directory.
+  - Has the same optional arguments as `make simple_map`, and has two additional optional arguments.
+  - `PROB_ITEM`: a float between 0 - 1, the likelihood of spawning an item in an appropriate cell. 
+  - `PROB_ENEMY`: a float between 0 - 1, the likelihood of spawning an enemy in an appropriate cell. 
+  - **make clean** - may be used to remove saved images from the `figs` directory.
