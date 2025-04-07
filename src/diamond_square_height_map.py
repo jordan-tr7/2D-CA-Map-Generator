@@ -1,4 +1,6 @@
 from helpers import map_helpers as maps
+import matplotlib.pyplot as plt
+from matplotlib import colors
 import numpy as np
 
 """
@@ -18,7 +20,7 @@ e.g., from [-2, 2] to [-1, 1]
 """
 
 
-def diamond_square(starting_size, heights, rand_range):
+def initialize_corners(starting_size, heights):
     
     np.random.seed(42) #rng_seed
 
@@ -39,32 +41,12 @@ def diamond_square(starting_size, heights, rand_range):
     grid[0, chunk_size] = np.random.randint(heights[0], heights[1] + 1)
     grid[chunk_size, chunk_size] = np.random.randint(heights[0], heights[1] + 1)
 
-    roughness = 2 # random range
-
-    while chunk_size > 1:
-        
-        step_size = chunk_size // 2
-
-        for i in range(0, max_table_idx, step_size):
-            for j in range(0, max_table_idx, step_size):
-                # skip if this cell already has a value
-                if grid[i, j] != 0:
-                    continue
-
-                grid[i, j] = (grid[i - step_size, j - step_size] + grid[i + step_size, j + step_size] +  grid[i - step_size, j + step_size] +  grid[i + step_size, j - step_size])/4 
-
-        chunk_size //= 2
-
-
-     #   diamond_step()
-     #   chunk_size /= 2
-     #   roughness /= 2
-    
-    return grid # return height_map
+    return grid 
 
 
 
-def diamond_square_recur(grid, top_LX, bot_RX, top_LY, bot_RY, depth):
+def diamond_square_recur(grid, top_LX, bot_RX, top_LY, bot_RY, depth, random_range):
+
 
     current_length = bot_RX - top_LX
 
@@ -72,27 +54,86 @@ def diamond_square_recur(grid, top_LX, bot_RX, top_LY, bot_RY, depth):
     if current_length < 2:
         return
 
-    modify_X = (top_LX + bot_RX) / 2
-    modify_Y = (top_LY + bot_RY) / 2
+    modify_X = int((top_LX + bot_RX) / 2)
+    modify_Y = int((top_LY + bot_RY) / 2) 
 
     # diamond part
-    avg = int((grid[top_LX, top_LY] + grid[top_LX, bot_RY] + grid[bot_RX, bot_RY] + grid[bot_RX, top_LY]) / 4)
-    grid[modify_X, modify_Y] = avg # TODO: add random num here
+    avg = (grid[top_LX, top_LY] + grid[top_LX, bot_RY] + grid[bot_RX, bot_RY] + grid[bot_RX, top_LY]) / 4
+    grid[modify_X, modify_Y] = avg + np.random.randint(random_range[0], random_range[1])
 
-    # square part
+    # --------------------- square part ---------------------
     
+    # left square side midpoint TODO: add random
+    grid[top_LX, modify_Y] = ((grid[top_LX, top_LY] + grid[top_LX, bot_RY] + grid[modify_X, modify_Y]) / 3) + np.random.randint(random_range[0], random_range[1])
 
+    # top square side midpoint TODO: add random
+    grid[modify_X, top_LY] = ((grid[top_LX, top_LY] + grid[bot_RX, top_LY] + grid[modify_X, modify_Y]) / 3) + np.random.randint(random_range[0], random_range[1])
+
+    # right square side midpoint TODO: add random
+    grid[bot_RX, modify_Y] = ((grid[modify_X, modify_Y] + grid[bot_RX, top_LY] + grid[bot_RX, bot_RY]) / 3) + np.random.randint(random_range[0], random_range[1])
+
+    # bottom square side midpoint TODO: add random
+    grid[modify_X, bot_RY] = ((grid[modify_X, modify_Y] + grid[top_LX, bot_RY] + grid[bot_RX, bot_RY]) / 3) + np.random.randint(random_range[0], random_range[1])
+
+
+    # update random range var
+    random_range = [i * 0.95 for i in random_range]
+
+    # ---------------- make recursive calls ---------------- 
+    # top-left quadrant
+    diamond_square_recur(grid, top_LX, modify_X, top_LY, modify_Y, depth + 1, random_range)
+   
+    # bottom-right quadrant
+    diamond_square_recur(grid, modify_X, bot_RX, modify_Y, bot_RY, depth + 1, random_range)
+    
+    # top-right quadrant
+    diamond_square_recur(grid, modify_X, bot_RX, top_LY, modify_Y, depth + 1, random_range)
+    
+    # bottom-left quadrant
+    diamond_square_recur(grid, top_LX, modify_X, modify_Y, bot_RY, depth + 1, random_range)
+
+
+
+def plot_heightmap(grid, filename):
+
+    # create a plot to hold the figure
+    plot = plt.figure()
+
+    color_map = colors.ListedColormap(['blue', '#E9DFC3', 'green', 'gray', 'white'])
+    bounds = [0, 6, 8, 12, 16, 20]
+    norm = colors.BoundaryNorm(bounds, color_map.N)
+
+    plot = plt.imshow(
+        grid, interpolation = 'nearest', origin = 'lower',
+        cmap = color_map, norm = norm
+    )
+
+    # this may be uncommented for color scale, but not relevant for binary
+    plt.colorbar(plot)
+    
+    # save image then display plot
+    plt.savefig(f'figs/height-maps/{filename}.png')
+    plt.show()
+
+
+#def diamond_square(grid, topLX, botRX, topLY):
+#    print("hi")
 
 def main():
 
-    heights = [1, 8]
-    rand_range = [-2, 2]
+    heights = [0, 20]
+    rand_range = [-4, 4]
 
 
-    test = diamond_square(2, heights, rand_range)
-    print(test)
+    test = initialize_corners(7, heights)
+    #print(test)
 
+    diamond_square_recur(test, 0, test.shape[0]-1, 0, test.shape[1]-1, 1, rand_range)
 
+    plot_heightmap(test, "Test-1")
+
+    #print(np.min(test))
+    #print(np.max(test))
 
 
 
