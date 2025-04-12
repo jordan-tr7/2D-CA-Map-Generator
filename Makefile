@@ -20,7 +20,7 @@ height_map:
 	python src/diamond_square_height_map.py
 
 test:
-	python src/test.py
+	python src/pygame_test.py
 
 clean:
 	rm figs/*
