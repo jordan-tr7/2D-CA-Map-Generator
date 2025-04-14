@@ -132,7 +132,5 @@ def main():
     #        print(grid[i, j])
 
 
-
-
 if __name__ == "__main__":
     main()
