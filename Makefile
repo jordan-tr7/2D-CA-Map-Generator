@@ -1,8 +1,8 @@
 
-HEIGHT = 100
-WIDTH = 100
+HEIGHT = 25 # 100
+WIDTH = 25 # 100
 DENSITY = 65
-ITERATIONS = 12
+ITERATIONS = 3 # 12
 SEED = 69420
 PROB_ITEM = 0.3
 PROB_ENEMY = 0.01
@@ -23,7 +23,7 @@ height_map:
 	python src/diamond_square_height_map.py
 
 test:
-	python src/pygame_test.py
+	python src/bfs_test.py
 
 clean:
 	rm figs/*
