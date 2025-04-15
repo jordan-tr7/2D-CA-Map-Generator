@@ -20,13 +20,20 @@ def main():
     grid = maps.create_noise_grid(args.height, args.width, args.density, args.seed)
 
     # plot this initial noise grid
-    maps.plot_grid(grid, f"Density-{args.density}_iteration-0_{args.height}x{args.width}")
+    #maps.plot_grid(grid, f"Density-{args.density}_iteration-0_{args.height}x{args.width}")
+
+
+    iterations = 15
+
+    for i in range(iterations):
+        new_map = maps.create_map_with_ca(grid, i)
+        maps.plot_grid(new_map, f"animation/{i}_iteration", f"time = {i}")
 
     # use function to smooth map with cellular automata
-    new_map = maps.create_map_with_ca(grid, args.iterations)
+    #new_map = maps.create_map_with_ca(grid, args.iterations)
 
     # plot the resulting map from CA iterations
-    maps.plot_grid(new_map, f"Density-{args.density}_iteration-{args.iterations}_{args.height}x{args.width}")
+    #maps.plot_grid(new_map, f"Density-{args.density}_iteration-{args.iterations}_{args.height}x{args.width}")
 
 
 if __name__ == "__main__":

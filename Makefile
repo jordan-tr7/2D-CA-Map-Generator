@@ -1,7 +1,7 @@
 
 HEIGHT = 100 #  25
 WIDTH = 100 #  25
-DENSITY = 65
+DENSITY = 56 #65
 ITERATIONS = 12 #  3
 SEED = 42069
 PROB_ITEM = 0.3
@@ -21,6 +21,9 @@ spawn_map:
 
 height_map:
 	python src/diamond_square_height_map.py
+
+animation:
+	python src/animate_imgs.py
 
 test:
 	python src/bfs_test.py

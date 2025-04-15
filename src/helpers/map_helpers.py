@@ -43,12 +43,12 @@ def create_noise_grid(num_rows, num_cols, desired_density, rng_seed):
     return grid
 
 
-def plot_grid(grid, filename):
+def plot_grid(grid, filename, custom_title):
     # create a plot to hold the figure
     plot = plt.figure()
 
     # add a title, then use imshow to add the plot
-    plt.title = "Map Test"
+    plt.title(custom_title)
     plot = plt.imshow(
         grid, cmap = 'Greys', interpolation = 'nearest', origin = 'lower'
     )
