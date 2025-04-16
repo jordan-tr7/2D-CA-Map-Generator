@@ -130,15 +130,117 @@ def find_room_coordinates(grid):
 
 
 def get_room_midpoints(room_dict):
+    # create a new dictionary to store the room midpoints
+    midpoints_dict = {}
+    idx = 0
+
+    for key, val in room_dict.items():
+
+        int_list = [int(i) for i in val]
+
+        # find the middle x coord
+        avg_x = math.floor((int_list[0] + int_list[1]) / 2)
+
+        # find the middle y coord
+        avg_y = math.floor((int_list[2] + int_list[3]) / 2)
+
+        # add to dictionary the midpoint x, y, and area of room
+        midpoints_dict[idx] = [avg_x, avg_y, int_list[4]]
+        idx += 1
+
+    return midpoints_dict
 
 
+
+def get_manhattan_distance(room, other_rooms):
+
+    dist_dict = {}
+    idx = 0
+
+    #print(room)
+    #print(other_rooms)
+
+    """
+    formula for manhattan distance is:
+        |x1 - x2| + |y1 - y2|
+    """
+    for r in other_rooms:
+
+        x1 = room[0]
+        x2 = r[0]
+        y1 = room[1]
+        y2 = r[1]
+        room_area = r[2]
+
+        #print(f"x1: {x1}\nx2: {x2}\ny1: {y1}\ny2: {y2}\nroom_area:{room_area}")
+
+        m_dist = abs(x1 - x2) + abs(y1 - y2)
+
+        # add calculated distance to dictionary with that other room's midpoint
+        dist_dict[idx] = [x2, y2, room_area, m_dist]
+        idx += 1
+
+    # after all distances calculated, sort dictionary by manhattan dist
+    # for lambda key, values are the 1st index, and we want manhattan dist, index 3 w/in those
+    sorted_dict = dict(sorted(dist_dict.items(), key = lambda i: i[1][3]))
+
+    return sorted_dict
+
+
+def make_path(grid, room1, room2):
+
+    min_range = 0
+    max_range = 2
+
+    start_x = room1[0]
+    start_y = room1[1]
+    end_x = room2[0]
+    end_y = room2[1]
+
+    while (start_x != end_x) or (start_y != end_y):
+        clear_width = np.random.randint(min_range, max_range)
+
+        for i in range(start_x - clear_width, start_x + clear_width + 1):
+            for j in range(start_y - clear_width, start_y + clear_width + 1):
+                grid[i, j] = 0
+
+        if start_x < end_x:
+            start_x += 1
+        
+        if start_x > end_x:
+            start_x -= 1
+        
+        if start_y < end_y:
+            start_y += 1
+        
+        if start_y > end_y:
+            start_y -= 1
+    
+
+def connect_map(grid, all_rooms, n_neighbors):
+
+    for i in range(len(all_rooms)):
+
+        # get the room we're currently on
+        room = all_rooms[i]
+
+        # make a copy of all_rooms for remaining so that OG isn't modified
+        remaining_rooms = all_rooms.copy()
+
+        # get rid of the room we're currently on:
+        remaining_rooms.pop(i)
+
+        manhattan_distances = get_manhattan_distance(room, remaining_rooms)
+
+        for j in range(n_neighbors):
+            make_path(grid, room, list(manhattan_distances.values())[j])
 
 
 def main():
 
     """
     """
-    test_no = 4
+    test_no = 5
 
 
     # add arguments for program to parse
@@ -159,36 +261,51 @@ def main():
     # use function to smooth map with cellular automata
     new_map = maps.create_map_with_ca(grid, args.iterations)
 
+    # add details to the new map
     modified_map = maps.add_detail(new_map, args.prob_item, args.prob_enemy)
      
-    maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map")
 
 
-    test_dict = find_room_coordinates(modified_map)
+    #maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map")
 
-    #maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map_After-Room-Finding")
 
-    midpoints_dict = {}
-    idx = 0
+    midpoints_dict = get_room_midpoints(find_room_coordinates(modified_map))
 
-    for key, val in test_dict.items():
 
-        int_list = [int(i) for i in val]
-        avg_x = math.floor((int_list[0] + int_list[1]) / 2)
-        avg_y = math.floor((int_list[2] + int_list[3]) / 2)
-
-        midpoints_dict[idx] = [avg_x, avg_y]
-        idx += 1
-        #print(f"Key: {key}, val: {[int(i) for i in val]}")
-
-    #print(midpoints_dict)
 
     for key, val in midpoints_dict.items():
-        modified_map[val[0], val[1]] = 420
+        modified_map[val[0], val[1]] = 400
+        #print(f"Room: ({val[0]}, {val[1]}), area: {val[2]}")
 
-    maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map_with_room_midpoints")
+    #maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map_with_room_midpoints")
+    #print(modified_map)
 
+    #print(midpoints_dict.keys())
+    #print(midpoints_dict.values())
+    #print(midpoints_dict.items())
+    #print(abs(-1))
 
+    all_rooms = list(midpoints_dict.values())
+
+    #room_1 = all_rooms[0]
+    #rest = all_rooms[1:]
+
+    #print(room_1[0])
+    #print(rest)
+
+    #for r in rest:
+       # print(r[0])
+
+    #test = get_manhattan_distance(room_1, rest)
+
+    #print(room_1)
+    #print(list(test.values())[0])
+
+    #make_path(modified_map, room_1, list(test.values())[0])
+
+    connect_map(modified_map, all_rooms, 3)
+
+    maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_AfterPath")
 
 
 if __name__ == "__main__":

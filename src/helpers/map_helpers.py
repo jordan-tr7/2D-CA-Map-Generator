@@ -203,8 +203,8 @@ def plot_complex_grid(grid, filename):
     # create a plot to hold the figure
     plot = plt.figure()
 
-    color_map = colors.ListedColormap(['white', 'black', 'gold', 'red', 'blue', 'green', 'purple'])
-    bounds = [0, 1, 2, 3, 4, 5, 70, 419]
+    color_map = colors.ListedColormap(['white', 'black', 'gold', 'red', 'blue', 'green', 'pink'])
+    bounds = [0, 0.99, 2, 3, 4, 5, 70, 419]
     norm = colors.BoundaryNorm(bounds, color_map.N)
 
     plot = plt.imshow(
