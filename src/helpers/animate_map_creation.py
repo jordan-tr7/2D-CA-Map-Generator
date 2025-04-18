@@ -37,7 +37,7 @@ def clear_anim_directory():
         except Exception as e:
             print(f"Error deleting {file_path}: {e}")
 
-def animate_map_creation(output_file_path, frame_duration):
+def animate_map_creation(output_file_path, frame_duration, initial_iterations):
     
     filenames = sort_text_by_number(os.listdir(IMAGE_FOLDER))
 
@@ -49,5 +49,10 @@ def animate_map_creation(output_file_path, frame_duration):
         image = imageio.imread(temp)
         images.append(image)
     
-    imageio.mimsave(output_file_path, images, format = "GIF", duration = frame_duration)
+    frames = initial_iterations * [269]
+    subsequent_frames = (len(images) - initial_iterations) * [frame_duration]
+
+    frames.extend(subsequent_frames)
+
+    imageio.mimsave(output_file_path, images, format = "GIF", duration = frames)
 

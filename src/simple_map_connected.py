@@ -16,7 +16,6 @@ def main():
     parser.add_argument("--animate", type = int, help = "Int for whether or not to animate plot: 1 = yes, 0 = no")
     args = parser.parse_args()
 
-
     # make starting grid
     grid = maps.create_noise_grid(args.height, args.width, args.density, args.seed)
 
@@ -36,13 +35,17 @@ def main():
 
         # at this point the room is created, needs to be connected
 
-        midpoints_dict = maps.get_room_midpoints(maps.find_room_coordinates(new_map))
+        find_room_results = maps.find_room_coordinates(new_map, animation_index, args.density, args.seed)
+        room_dict = find_room_results[0]
+        animation_index = find_room_results[1]
+
+        midpoints_dict = maps.get_room_midpoints(room_dict)
         all_rooms = list(midpoints_dict.values())
 
         # here we need to rework map connection function to save an image
         maps.connect_map(new_map, all_rooms, 3, animation_index, args.density, args.seed)
 
-        anim.animate_map_creation(f"figs/gifs/Connected_Density-{args.density}_Iterations-{args.iterations}_Seed-{args.seed}.gif", 50)
+        anim.animate_map_creation(f"figs/gifs/Connected_Density-{args.density}_Iterations-{args.iterations}_Seed-{args.seed}.gif", 69, args.iterations)
 
         anim.clear_anim_directory()
 
@@ -57,38 +60,6 @@ def main():
         maps.connect_map(new_map, all_rooms, 3)
 
         maps.plot_grid(new_map, "spawn-points/Connected", "")
-
-    #maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map")
-
-    #for key, val in midpoints_dict.items():
-        #modified_map[val[0], val[1]] = 400
-        #print(f"Room: ({val[0]}, {val[1]}), area: {val[2]}")
-
-    #maps.plot_complex_grid(modified_map, f"spawn-points/Test-{test_no}_Base-Map_with_room_midpoints")
-    #print(modified_map)
-
-    #print(midpoints_dict.keys())
-    #print(midpoints_dict.values())
-    #print(midpoints_dict.items())
-    #print(abs(-1))
-
-    #room_1 = all_rooms[0]
-    #rest = all_rooms[1:]
-
-    #print(room_1[0])
-    #print(rest)
-
-    #for r in rest:
-       # print(r[0])
-
-    #test = get_manhattan_distance(room_1, rest)
-
-    #print(room_1)
-    #print(list(test.values())[0])
-
-    #make_path(modified_map, room_1, list(test.values())[0])
-
-    
 
 
 if __name__ == "__main__":

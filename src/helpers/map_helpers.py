@@ -203,7 +203,7 @@ def add_detail(starting_grid, prob_item, prob_enemy):
     return temp_grid
 
 
-def plot_complex_grid(grid, filename):
+def plot_complex_grid(grid, filename, custom_title, display=False):
     # create a plot to hold the figure
     plot = plt.figure()
 
@@ -211,17 +211,20 @@ def plot_complex_grid(grid, filename):
     bounds = [0, 0.99, 2, 3, 4, 5, 70, 419]
     norm = colors.BoundaryNorm(bounds, color_map.N)
 
+    plt.title(custom_title)
     plot = plt.imshow(
         grid, interpolation = 'nearest', origin = 'lower',
         cmap = color_map, norm = norm
     )
 
     # this may be uncommented for color scale, but not relevant for binary
-    plt.colorbar(plot)
+    #plt.colorbar(plot)
     
     # save image then display plot
     plt.savefig(f'figs/{filename}.png')
-    plt.show()
+
+    if display:
+        plt.show()
 
 
 def create_index_matrix(grid):
@@ -269,7 +272,7 @@ def create_adjacency_matrix(grid):
 
 
 
-def find_room_coordinates(grid):
+def find_room_coordinates(grid, animation_index, density, seed):
 
     grid_to_mod = grid.copy()
     ind_mat = create_index_matrix(grid_to_mod)
@@ -304,6 +307,8 @@ def find_room_coordinates(grid):
                 max_y = col
                 area = 0
 
+                m = 0
+
                 while q.qsize() > 0:
                     
                     u = q.get()
@@ -313,6 +318,19 @@ def find_room_coordinates(grid):
 
                     # update symbol in game grid
                     grid_to_mod[u // num_rows, u % num_cols] = 9
+
+                    m += 1
+
+                    if m % 50 == 0:
+
+                        animation_index += 1
+
+                        plot_complex_grid(
+                            grid_to_mod, 
+                            f"animation/{animation_index}_iteration",
+                            f"time = {animation_index} (Density: {density}, Seed: {seed})"
+                        )
+
 
                     # check neighbors:
                     for i in range((u // num_rows) - 1, (u // num_rows) + 2):
@@ -343,7 +361,7 @@ def find_room_coordinates(grid):
                 room_dict[idx] = [min_x, max_x, min_y, max_y, area]
                 idx += 1
 
-    return room_dict
+    return [room_dict, animation_index]
 
 
 
@@ -413,6 +431,8 @@ def make_path(grid, room1, room2, animation_index, density, seed):
     end_x = room2[0]
     end_y = room2[1]
 
+    m = 0
+
     while (start_x != end_x) or (start_y != end_y):
         clear_width = np.random.randint(min_range, max_range)
 
@@ -432,8 +452,11 @@ def make_path(grid, room1, room2, animation_index, density, seed):
         if start_y > end_y:
             start_y -= 1
     
-        plot_grid(grid, f"animation/{animation_index}_iteration", f"time = {animation_index} (Density: {density}, Seed: {seed})")
-        animation_index += 1
+        m += 1
+
+        if m % 5 == 0:
+            plot_grid(grid, f"animation/{animation_index}_iteration", f"time = {animation_index} (Density: {density}, Seed: {seed})")
+            animation_index += 1
 
     return animation_index
 
