@@ -54,7 +54,7 @@ def main():
         # use function to smooth map with cellular automata
         new_map = maps.create_map_with_ca(grid, args.iterations)
 
-        midpoints_dict = maps.get_room_midpoints(maps.find_room_coordinates(new_map))
+        midpoints_dict = maps.get_room_midpoints(maps.find_room_coordinates(new_map, animation_index, args.density, args.seed)[0])
         all_rooms = list(midpoints_dict.values())
 
         maps.connect_map(new_map, all_rooms, 3)

@@ -1,6 +1,6 @@
 import argparse
 from helpers import map_helpers as maps
-
+from helpers import animate_map_creation as anim
 
 
 def main():
@@ -14,28 +14,54 @@ def main():
     parser.add_argument("--seed", type = int, help = "Seed for random number generation")
     parser.add_argument("--prob_item", type = float, help = "probability of spawning an item")
     parser.add_argument("--prob_enemy", type = float, help = "probability of spawning an enemy")
+    parser.add_argument("--animate", type = int, help = "Int for whether or not to animate plot: 1 = yes, 0 = no")
     args = parser.parse_args()
 
     # make starting grid
     grid = maps.create_noise_grid(args.height, args.width, args.density, args.seed)
 
-    # plot this initial noise grid
-    maps.plot_grid(grid, f"Density-{args.density}_iteration-0_{args.height}x{args.width}")
 
-    # use function to smooth map with cellular automata
-    new_map = maps.create_map_with_ca(grid, args.iterations)
+    if args.animate == 1:
+        
+        anim.clear_anim_directory()
 
-    modified_map = maps.add_detail(new_map, args.prob_item, args.prob_enemy)
+        animation_index = 0
 
-    maps.plot_complex_grid(modified_map, f"2d-maps-w-items/Enhanced_Density-{args.density}_iteration-{args.iterations}_p-enem-{args.prob_enemy}_p-item-{args.prob_item}_{args.height}x{args.width}")
+        while animation_index < args.iterations:
+            new_map = maps.create_map_with_ca(grid, animation_index)
+            maps.plot_grid(new_map, f"animation/{animation_index}_iteration", f"time = {animation_index} (Density: {args.density}, Seed: {args.seed})")
+            animation_index += 1
 
-    print(modified_map)
+        # at this point the room is created, needs to be connected
 
-    # plot the resulting map from CA iterations
-    #maps.plot_grid(new_map, f"Density-{args.density}_iteration-{args.iterations}_{args.height}x{args.width}")
-    # add items / enemies
+        find_room_results = maps.find_room_coordinates(new_map, animation_index, args.density, args.seed)
+        room_dict = find_room_results[0]
+        animation_index = find_room_results[1]
+
+        midpoints_dict = maps.get_room_midpoints(room_dict)
+        all_rooms = list(midpoints_dict.values())
+
+        # here we need to rework map connection function to save an image
+        animation_index = maps.connect_map(new_map, all_rooms, 3, animation_index, args.density, args.seed)
 
 
+        add_detail_results = maps.add_detail(new_map, args.prob_item, args.prob_enemy, animation_index, args.density, args.seed)
+
+        modified_map = add_detail_results[0]
+        animation_index = add_detail_results[1]
+
+        anim.animate_map_creation(f"figs/gifs/Items-Enemies_Density-{args.density}_Iterations-{args.iterations}_Seed-{args.seed}.gif", 69, args.iterations)
+
+        anim.clear_anim_directory()
+
+    else:
+
+        # use function to smooth map with cellular automata
+        new_map = maps.create_map_with_ca(grid, args.iterations)
+
+        modified_map = maps.add_detail(new_map, args.prob_item, args.prob_enemy, 0, args.density, args.seed, animate_flag=False)
+
+        maps.plot_complex_grid(modified_map[0], f"2d-maps-w-items/Enhanced_Density-{args.density}_iteration-{args.iterations}_p-enem-{args.prob_enemy}_p-item-{args.prob_item}_{args.height}x{args.width}", "")
 
 
 if __name__ == "__main__":

@@ -1,9 +1,8 @@
-
 HEIGHT = 100  
 WIDTH = 100  
-DENSITY = 58  
-ITERATIONS = 10  
-SEED = 110011
+DENSITY = 63  
+ITERATIONS = 15 
+SEED = 1001001
 ANIMATE = 1
 PROB_ITEM = 0.3
 PROB_ENEMY = 0.01
@@ -18,19 +17,8 @@ simple_map:
 connect_map:
 	python src/simple_map_connected.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --animate $(ANIMATE)
 
-
-
 enhanced_map:
-	python src/simple_map_w_items.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --prob_item $(PROB_ITEM) --prob_enemy $(PROB_ENEMY)
-
-
-
-height_map:
-	python src/diamond_square_height_map.py
-
-
-test:
-	python src/bfs_test.py
+	python src/simple_map_w_items.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --prob_item $(PROB_ITEM) --prob_enemy $(PROB_ENEMY) --animate $(ANIMATE)
 
 clean:
 	rm figs/animation/*

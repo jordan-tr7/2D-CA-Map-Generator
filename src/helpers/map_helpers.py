@@ -152,7 +152,7 @@ def create_map_with_ca(starting_grid, num_iterations):
 
 
 
-def add_detail(starting_grid, prob_item, prob_enemy):
+def add_detail(starting_grid, prob_item, prob_enemy, animation_index, density, seed, animate_flag=True):
 
     temp_grid = starting_grid.copy()
 
@@ -187,11 +187,31 @@ def add_detail(starting_grid, prob_item, prob_enemy):
                     spawn_item = np.random.choice([0, 1], p = [1 - prob_item, prob_item])
                     if spawn_item == 1:
                         temp_grid[row, col] = 2
+
+                        if animate_flag:
+
+                            animation_index += 1
+
+                            plot_complex_grid(
+                                temp_grid, 
+                                f"animation/{animation_index}_iteration",
+                                f"time = {animation_index} (Density: {density}, Seed: {seed})"
+                            )
                 
                 if num_neighboring_walls > 7:
                     spawn_diamond = np.random.choice([0, 1], p = [0.99, 0.01])
                     if spawn_diamond == 1:
                         temp_grid[row, col] = 4
+
+                        if animate_flag:
+
+                            animation_index += 1
+
+                            plot_complex_grid(
+                                temp_grid, 
+                                f"animation/{animation_index}_iteration",
+                                f"time = {animation_index} (Density: {density}, Seed: {seed})"
+                            )
 
             if num_neighboring_walls == 0:
 
@@ -199,8 +219,17 @@ def add_detail(starting_grid, prob_item, prob_enemy):
 
                 if spawn_enemy == 1:
                     temp_grid[row, col] = 3
+
+                    if animate_flag:
+                        animation_index += 1
+
+                        plot_complex_grid(
+                            temp_grid, 
+                            f"animation/{animation_index}_iteration",
+                            f"time = {animation_index} (Density: {density}, Seed: {seed})"
+                        )
     
-    return temp_grid
+    return [temp_grid, animation_index]
 
 
 def plot_complex_grid(grid, filename, custom_title, display=False):
@@ -478,4 +507,6 @@ def connect_map(grid, all_rooms, n_neighbors, animation_index, density, seed):
 
         for j in range(n_neighbors):
             animation_index = make_path(grid, room, list(manhattan_distances.values())[j], animation_index, density, seed)
+    
+    return animation_index
 
