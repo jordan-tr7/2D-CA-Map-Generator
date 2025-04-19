@@ -59,9 +59,14 @@ def main():
         # use function to smooth map with cellular automata
         new_map = maps.create_map_with_ca(grid, args.iterations)
 
+        midpoints_dict = maps.get_room_midpoints(maps.find_room_coordinates(new_map, -1, args.density, args.seed, animate_flag = False)[0])
+        all_rooms = list(midpoints_dict.values())
+
+        maps.connect_map(new_map, all_rooms, 3, -1, args.density, args.seed, animate_flag = False)
+
         modified_map = maps.add_detail(new_map, args.prob_item, args.prob_enemy, 0, args.density, args.seed, animate_flag=False)
 
-        maps.plot_complex_grid(modified_map[0], f"2d-maps-w-items/Enhanced_Density-{args.density}_iteration-{args.iterations}_p-enem-{args.prob_enemy}_p-item-{args.prob_item}_{args.height}x{args.width}", "")
+        maps.plot_complex_grid(modified_map[0], f"2d-maps-w-items/Enhanced_Density-{args.density}_iteration-{args.iterations}_p-enem-{args.prob_enemy}_p-item-{args.prob_item}", "")
 
 
 if __name__ == "__main__":

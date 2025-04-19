@@ -31,13 +31,13 @@ def main():
             new_map = maps.create_map_with_ca(grid, i)
             maps.plot_grid(new_map, f"animation/{i}_iteration", f"time = {i} (Density: {args.density}, Seed: {args.seed})")
 
-        anim.animate_map_creation(f"figs/gifs/Density-{args.density}_Iterations-{args.iterations}_Seed-{args.seed}.gif", 500)
+        anim.animate_map_creation(f"figs/gifs/Density-{args.density}_Iterations-{args.iterations}_Seed-{args.seed}.gif", 500, args.iterations)
     else:
         # use function to smooth map with cellular automata
         new_map = maps.create_map_with_ca(grid, args.iterations)
 
         # plot the resulting map from CA iterations
-        maps.plot_grid(new_map, f"Density-{args.density}_iteration-{args.iterations}_{args.height}x{args.width}")
+        maps.plot_grid(new_map, f"Density-{args.density}_iteration-{args.iterations}_{args.height}x{args.width}", "")
 
 
 if __name__ == "__main__":

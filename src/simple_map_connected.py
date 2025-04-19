@@ -54,12 +54,12 @@ def main():
         # use function to smooth map with cellular automata
         new_map = maps.create_map_with_ca(grid, args.iterations)
 
-        midpoints_dict = maps.get_room_midpoints(maps.find_room_coordinates(new_map, animation_index, args.density, args.seed)[0])
+        midpoints_dict = maps.get_room_midpoints(maps.find_room_coordinates(new_map, -1, args.density, args.seed, animate_flag = False)[0])
         all_rooms = list(midpoints_dict.values())
 
-        maps.connect_map(new_map, all_rooms, 3)
+        maps.connect_map(new_map, all_rooms, 3, -1, args.density, args.seed, animate_flag = False)
 
-        maps.plot_grid(new_map, "spawn-points/Connected", "")
+        maps.plot_grid(new_map, f"connected/Connected_Seed-{args.seed}_Density-{args.density}_i-{args.iterations}", "")
 
 
 if __name__ == "__main__":

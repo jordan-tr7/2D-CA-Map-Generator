@@ -301,7 +301,7 @@ def create_adjacency_matrix(grid):
 
 
 
-def find_room_coordinates(grid, animation_index, density, seed):
+def find_room_coordinates(grid, animation_index, density, seed, animate_flag=True):
 
     grid_to_mod = grid.copy()
     ind_mat = create_index_matrix(grid_to_mod)
@@ -336,7 +336,8 @@ def find_room_coordinates(grid, animation_index, density, seed):
                 max_y = col
                 area = 0
 
-                m = 0
+                if animate_flag:
+                    m = 0
 
                 while q.qsize() > 0:
                     
@@ -348,17 +349,19 @@ def find_room_coordinates(grid, animation_index, density, seed):
                     # update symbol in game grid
                     grid_to_mod[u // num_rows, u % num_cols] = 9
 
-                    m += 1
+                    if animate_flag:
 
-                    if m % 50 == 0:
+                        m += 1
 
-                        animation_index += 1
+                        if m % 50 == 0:
 
-                        plot_complex_grid(
-                            grid_to_mod, 
-                            f"animation/{animation_index}_iteration",
-                            f"time = {animation_index} (Density: {density}, Seed: {seed})"
-                        )
+                            animation_index += 1
+
+                            plot_complex_grid(
+                                grid_to_mod, 
+                                f"animation/{animation_index}_iteration",
+                                f"time = {animation_index} (Density: {density}, Seed: {seed})"
+                            )
 
 
                     # check neighbors:
@@ -450,7 +453,7 @@ def get_manhattan_distance(room, other_rooms):
     return sorted_dict
 
 
-def make_path(grid, room1, room2, animation_index, density, seed):
+def make_path(grid, room1, room2, animation_index, density, seed, animate_flag):
 
     min_range = 0
     max_range = 2
@@ -460,7 +463,8 @@ def make_path(grid, room1, room2, animation_index, density, seed):
     end_x = room2[0]
     end_y = room2[1]
 
-    m = 0
+    if animate_flag:
+        m = 0
 
     while (start_x != end_x) or (start_y != end_y):
         clear_width = np.random.randint(min_range, max_range)
@@ -481,16 +485,18 @@ def make_path(grid, room1, room2, animation_index, density, seed):
         if start_y > end_y:
             start_y -= 1
     
-        m += 1
+        if animate_flag:
 
-        if m % 5 == 0:
-            plot_grid(grid, f"animation/{animation_index}_iteration", f"time = {animation_index} (Density: {density}, Seed: {seed})")
-            animation_index += 1
+            m += 1
+
+            if m % 5 == 0:
+                plot_grid(grid, f"animation/{animation_index}_iteration", f"time = {animation_index} (Density: {density}, Seed: {seed})")
+                animation_index += 1
 
     return animation_index
 
 
-def connect_map(grid, all_rooms, n_neighbors, animation_index, density, seed):
+def connect_map(grid, all_rooms, n_neighbors, animation_index, density, seed, animate_flag=True):
 
     for i in range(len(all_rooms)):
 
@@ -506,7 +512,61 @@ def connect_map(grid, all_rooms, n_neighbors, animation_index, density, seed):
         manhattan_distances = get_manhattan_distance(room, remaining_rooms)
 
         for j in range(n_neighbors):
-            animation_index = make_path(grid, room, list(manhattan_distances.values())[j], animation_index, density, seed)
+            animation_index = make_path(grid, room, list(manhattan_distances.values())[j], animation_index, density, seed, animate_flag)
     
     return animation_index
+
+
+
+def find_euclidean_distance(p1, p2):
+    # p1, p2 are tuples for the ordered pair, e.g.:
+    # p1 = (x1, y1)
+    inner_part = ((p2[0] - p1[0]) ** 2) + ((p2[1] - p1[1]) ** 2)
+    euclidean_distance = inner_part ** 0.5
+    return euclidean_distance
+
+def find_specific_room(rooms_list, min_area, grid_shape, target_x="low", target_y="low"):
+
+    valid_rooms_list = [i for i in rooms_list if i[2] > min_area]
+
+    if len(valid_rooms_list) == 0:
+        raise Exception("Unable to find rooms: for this map there were no rooms above the specified min_area. Try lowering the map density or the min_area.")
+    
+    max_x = grid_shape[0] - 1
+    max_y = grid_shape[1] - 1
+
+    room_index = 0
+    room_x = valid_rooms_list[room_index][0]
+    room_y = valid_rooms_list[room_index][1]
+    lowest_distance = -1
+
+    if (target_x == "low") and (target_y == "low"):
+        lowest_distance = find_euclidean_distance((0, 0), (room_x, room_y))
+    elif (target_x == "low") and (target_y == "high"):
+        lowest_distance = find_euclidean_distance((0, max_y), (room_x, room_y))
+    elif (target_x == "high") and (target_y == "low"):
+        lowest_distance = find_euclidean_distance((max_x, 0), (room_x, room_y))
+    elif (target_x == "high") and (target_y == "high"):
+        lowest_distance = find_euclidean_distance((max_x, max_y), (room_x, room_y))
+
+    for i in range(len(valid_rooms_list)):
+
+        this_x = valid_rooms_list[i][0]
+        this_y = valid_rooms_list[i][1]
+
+        if (target_x == "low") and (target_y == "low"):
+            dist_from_goal = find_euclidean_distance((0, 0), (this_x, this_y))
+        elif (target_x == "low") and (target_y == "high"):
+            dist_from_goal = find_euclidean_distance((0, max_y), (this_x, this_y))
+        elif (target_x == "high") and (target_y == "low"):
+            dist_from_goal = find_euclidean_distance((max_x, 0), (this_x, this_y))
+        elif (target_x == "high") and (target_y == "high"):
+            dist_from_goal = find_euclidean_distance((max_x, max_y), (this_x, this_y))
+        
+        if dist_from_goal < lowest_distance:
+            room_index = i 
+            lowest_distance = dist_from_goal
+    
+    return valid_rooms_list[room_index]
+
 

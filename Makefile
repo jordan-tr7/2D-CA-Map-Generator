@@ -1,8 +1,8 @@
 HEIGHT = 100  
 WIDTH = 100  
-DENSITY = 63  
-ITERATIONS = 15 
-SEED = 1001001
+DENSITY = 59   
+ITERATIONS = 3  
+SEED = 1315156  
 ANIMATE = 1
 PROB_ITEM = 0.3
 PROB_ENEMY = 0.01
@@ -19,6 +19,12 @@ connect_map:
 
 enhanced_map:
 	python src/simple_map_w_items.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --prob_item $(PROB_ITEM) --prob_enemy $(PROB_ENEMY) --animate $(ANIMATE)
+
+complete_map:
+	python src/simple_map_spawn_exit.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --prob_item $(PROB_ITEM) --prob_enemy $(PROB_ENEMY)
+
+game:
+	python src/pygame_test.py
 
 clean:
 	rm figs/animation/*
