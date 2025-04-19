@@ -301,6 +301,60 @@ def create_adjacency_matrix(grid):
 
 
 
+def verify_path(grid, start, finish):
+
+    # get an index matrix for the grid
+    ind_mat = create_index_matrix(grid)
+
+    grid_shape = grid.shape
+    num_rows = grid_shape[0]
+    num_cols = grid_shape[1]
+    vis_mat = np.zeros(shape = (num_rows, num_cols), dtype = int)
+
+    # get starting cell index
+    cell_idx = ind_mat[start[0], start[1]]
+
+    # start BFS
+    q = queue.Queue()
+    q.put(cell_idx)
+
+    while q.qsize() > 0:
+
+        u = q.get()
+
+        # get current indices
+        current_x = u // num_rows 
+        current_y = u % num_cols 
+
+        # update visited
+        vis_mat[current_x, current_y] = 1
+
+        if (current_x == finish[0]) and (current_y == finish[1]):
+            return True
+
+        # left (x - 1, y)
+        if in_bounds(current_x - 1, current_y, grid_shape) and vis_mat[current_x - 1, current_y] == 0:
+            if (grid[current_x - 1, current_y] in [0, 3]) and (ind_mat[current_x - 1, current_y] not in q.queue):
+                q.put(ind_mat[current_x - 1, current_y])
+
+        # right (x + 1, y)
+        if in_bounds(current_x + 1, current_y, grid_shape) and vis_mat[current_x + 1, current_y] == 0:
+            if (grid[current_x + 1, current_y] in [0, 3]) and (ind_mat[current_x + 1, current_y] not in q.queue):
+                q.put(ind_mat[current_x + 1, current_y])
+
+        # up (x, y + 1)
+        if in_bounds(current_x, current_y + 1, grid_shape) and vis_mat[current_x, current_y + 1] == 0:
+            if (grid[current_x, current_y + 1] in [0, 3]) and (ind_mat[current_x, current_y + 1] not in q.queue):
+                q.put(ind_mat[current_x, current_y + 1])
+
+        # down (x, y - 1)
+        if in_bounds(current_x, current_y - 1, grid_shape) and vis_mat[current_x, current_y - 1] == 0:
+            if (grid[current_x, current_y - 1] in [0, 3]) and (ind_mat[current_x, current_y - 1] not in q.queue):
+                q.put(ind_mat[current_x, current_y - 1])
+
+    return False
+
+
 def find_room_coordinates(grid, animation_index, density, seed, animate_flag=True):
 
     grid_to_mod = grid.copy()
@@ -323,7 +377,7 @@ def find_room_coordinates(grid, animation_index, density, seed, animate_flag=Tru
             #print(f"In row: {row}, col: {col}")
 
             # if blank space, and not visited start bfs
-            if cell_val == 0 and vis_mat[cell_idx // num_rows, cell_idx // num_cols] == 0:
+            if cell_val == 0 and vis_mat[cell_idx // num_rows, cell_idx % num_cols] == 0:
                 
                 #print(f"In cell: {row}, {col}... value: {cell_val}... visited {vis_mat[cell_idx // num_rows, cell_idx // num_cols]}")
 
@@ -590,8 +644,15 @@ def create_complete_map(height, width, density, seed, iterations, prob_item, pro
     # find and add spawn and exit point
     spawn_point = find_specific_room(all_rooms, 35, new_map.shape, "high", "low")
     exit_point = find_specific_room(all_rooms, 35, new_map.shape, "low", "high")
+
+    # check if valid path from spawn to level exit
+    valid_points = verify_path(modified_map[0], [spawn_point[0], spawn_point[1]], [exit_point[0], exit_point[1]])
+
+    if valid_points == False:
+        return create_complete_map(height, width, density - 1, seed + 1, iterations - 1, prob_item, prob_enemy)
+
     modified_map[0][spawn_point[0], spawn_point[1]] = 69
     modified_map[0][exit_point[0], exit_point[1]] = 400
 
     # return map
-    return [modified_map[0], [spawn_point[0], spawn_point[1]]]
+    return [modified_map[0], [spawn_point[0], spawn_point[1]], [exit_point[0], exit_point[1]], density, seed, iterations]

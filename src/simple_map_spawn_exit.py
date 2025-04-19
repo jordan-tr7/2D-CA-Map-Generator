@@ -33,8 +33,10 @@ def main():
     spawn_point = maps.find_specific_room(all_rooms, 35, new_map.shape, "high", "low")
     exit_point = maps.find_specific_room(all_rooms, 35, new_map.shape, "low", "high")
 
-    #modified_map[0][spawn_point[0], spawn_point[1]] = 69
-    #modified_map[0][exit_point[0], exit_point[1]] = 400
+    valid_points = maps.verify_path(modified_map[0], [spawn_point[0], spawn_point[1]], [exit_point[0], exit_point[1]])
+    print(valid_points)
+
+
 
     for i in range(spawn_point[0] - 1, spawn_point[0] + 2):
         for j in range(spawn_point[1] - 1, spawn_point[1] + 2):
