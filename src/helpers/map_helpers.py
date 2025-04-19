@@ -570,3 +570,28 @@ def find_specific_room(rooms_list, min_area, grid_shape, target_x="low", target_
     return valid_rooms_list[room_index]
 
 
+def create_complete_map(height, width, density, seed, iterations, prob_item, prob_enemy):
+    # get base noise grid
+    grid = create_noise_grid(height, width, density, seed)
+
+    # smooth map with cellular automata
+    new_map = create_map_with_ca(grid, iterations)
+
+    # find and store the rooms
+    midpoints_dict = get_room_midpoints(find_room_coordinates(new_map, -1, density, seed, animate_flag = False)[0])
+    all_rooms = list(midpoints_dict.values())
+
+    # connect the rooms on the map
+    connect_map(new_map, all_rooms, 3, -1, density, seed, animate_flag = False)
+
+    # add items and enemies to map
+    modified_map = add_detail(new_map, prob_item, prob_enemy, 0, density, seed, animate_flag=False)
+
+    # find and add spawn and exit point
+    spawn_point = find_specific_room(all_rooms, 35, new_map.shape, "high", "low")
+    exit_point = find_specific_room(all_rooms, 35, new_map.shape, "low", "high")
+    modified_map[0][spawn_point[0], spawn_point[1]] = 69
+    modified_map[0][exit_point[0], exit_point[1]] = 400
+
+    # return map
+    return [modified_map[0], [spawn_point[0], spawn_point[1]]]

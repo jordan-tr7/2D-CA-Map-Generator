@@ -24,7 +24,7 @@ complete_map:
 	python src/simple_map_spawn_exit.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --prob_item $(PROB_ITEM) --prob_enemy $(PROB_ENEMY)
 
 game:
-	python src/pygame_test.py
+	python src/pygame_test.py --height $(HEIGHT) --width $(WIDTH) --density $(DENSITY) --iterations $(ITERATIONS) --seed $(SEED) --prob_item $(PROB_ITEM) --prob_enemy $(PROB_ENEMY)
 
 clean:
 	rm figs/animation/*
