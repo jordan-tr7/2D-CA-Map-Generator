@@ -3,7 +3,9 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - make
+  - matplotlib
   - pandas
   - seaborn
-  - matplotlib
-  - make
+  - pygame
+  - imageio
