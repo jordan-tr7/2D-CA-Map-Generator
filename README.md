@@ -12,13 +12,11 @@ The Roux Institute - Northeastern University
 
 ## Required Utilities
 
----
-
 All dependencies used in this project are free and open-source. A full list is included in `environment.yml`. The main required utilities include [Python](https://www.python.org/downloads/), [Make](https://www.gnu.org/software/make/), [Git](https://git-scm.com/), and [Miniconda](https://www.anaconda.com/docs/getting-started/miniconda/main) (*or some other virtual environment manager*).
 
-## Makefile Instructions for Reproducibility
-
 ---
+
+## Makefile Instructions for Reproducibility
 
 After utilities are installed, the following make commands can be used to run various files in the project:
 
@@ -45,9 +43,9 @@ After utilities are installed, the following make commands can be used to run va
   - Has the same optional arguments as `make enhanced_map`, except this one does not have the ability to `ANIMATE`, it will only save a PNG of the final map. 
 - **make clean** - may be used to manually remove all saved images from the `figs/animation` sub-directory. This should be handled by all animation functions, but just a failsafe. 
 
-## Project Layout
-
 ---
+
+## Project Layout
 
 ```
 ├── environment.yml                 <- yml file with dependencies for conda 
@@ -76,3 +74,5 @@ After utilities are installed, the following make commands can be used to run va
 │   ├── simple_map_w_items.py       <- Script for animating map creation w/ items and enemies.
 │   └── simple_map.py               <- Script for animating simple map creation w/ CA rules.
 ```
+
+---
