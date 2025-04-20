@@ -105,8 +105,8 @@ def main():
         min_col_pos = player_y - int(SCREEN_HEIGHT_BLOCKS / 2) 
 
         # we only want to render the portion of the map centered around the player within view distance
-        for i in range(player_pos[0] - int(SCREEN_WIDTH_BLOCKS / 2), player_pos[0] + int(SCREEN_WIDTH_BLOCKS / 2)):
-            for j in range(player_pos[1] - int(SCREEN_HEIGHT_BLOCKS / 2), player_pos[1] + int(SCREEN_HEIGHT_BLOCKS / 2)):
+        for i in range(player_pos[0] - int(SCREEN_WIDTH_BLOCKS / 2), player_pos[0] + int(SCREEN_WIDTH_BLOCKS / 2) + 1):
+            for j in range(player_pos[1] - int(SCREEN_HEIGHT_BLOCKS / 2), player_pos[1] + int(SCREEN_HEIGHT_BLOCKS / 2) + 1):
 
                 # if any index is out of bounds, skip drawing anything, otherwise, use blit to draw sprites to grid at specified x, y pos
                 # NOTE: some transparent sprites (player, enemy) are drawn over a dirt blit so there's no blank background behind sprite
