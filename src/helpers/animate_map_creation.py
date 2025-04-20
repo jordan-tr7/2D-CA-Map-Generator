@@ -80,9 +80,10 @@ def animate_map_creation(output_file_path, frame_duration, initial_iterations):
     # we need to create a list to manually set frame duration on each png in the gif. 
     # we do this so that we can make the initial animation sequence slower. All remaining
     # images for steps not in initial_iterations will be set to frame_duration
-    frames = initial_iterations * [269]
+    frames = initial_iterations * [400]
     subsequent_frames = (len(images) - initial_iterations) * [frame_duration]
     frames.extend(subsequent_frames)
 
-    # save GIF output using imageio.mimsave, image list, and custom duration list for frames.
-    imageio.mimsave(output_file_path, images, format = "GIF", duration = frames)
+    # save GIF output using imageio.mimsave, image list, and custom duration list for frames. 
+    # Updating to add looping to GIF
+    imageio.mimsave(output_file_path, images, format = "GIF", duration = frames, loop = 0)
