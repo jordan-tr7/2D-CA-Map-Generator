@@ -1,6 +1,6 @@
 # 2D Game Map Generation with Cellular Automata
 
-Code to procedurally generate 2D game maps using Cellular Automata and other techniques. Includes capabilities for visualizing the procedural generation in .gif files, and a Pygame implementation that converts the randomly generated maps into a traversable game environemnt. 
+Code to procedurally generate 2D game maps using Cellular Automata and other techniques. Includes capabilities for visualizing the procedural generation in .gif files, and a Pygame implementation that converts the randomly generated maps into a traversable game environment. 
 
 **CS7880:** *Special Topics in Theoretical Computer Science*
 
